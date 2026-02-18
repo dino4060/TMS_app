@@ -6,20 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace back_end_for_TMS.Api;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 public class AccountController(AccountService accountService) : ControllerBase
 {
+    [HttpGet]
     [AllowAnonymous]
-    [HttpGet("info")]
     public IActionResult GetInfo()
     {
-        int i = 0;
-        int ii = 2;
         return Ok(new { message = "This is public data" });
     }
 
+    [HttpPost]
     [AllowAnonymous]
-    [HttpPost("register")]
     public async Task<ActionResult<AuthResult>> Register([FromBody] RegisterDto dto)
     {
         var result = await accountService.Register(dto);
@@ -27,8 +25,8 @@ public class AccountController(AccountService accountService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost]
     [AllowAnonymous]
-    [HttpPost("login")]
     public async Task<ActionResult<AuthResult>> Login([FromBody] LoginDto dto)
     {
         var result = await accountService.Login(dto);
@@ -36,8 +34,8 @@ public class AccountController(AccountService accountService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost]
     [Authorize]
-    [HttpPost("logout")]
     public IActionResult Logout()
     {
         // Với JWT, Logout chủ yếu diễn ra ở Client (xóa Token). 
@@ -45,8 +43,8 @@ public class AccountController(AccountService accountService) : ControllerBase
         return Ok(new { message = "Logged out successfully" });
     }
 
+    [HttpGet]
     [Authorize]
-    [HttpGet("me")]
     public async Task<ActionResult<UserProfile>> GetMe()
     {
         // 'User' là property có sẵn của ControllerBase, kiểu ClaimsPrincipal
