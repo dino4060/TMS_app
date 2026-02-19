@@ -10,6 +10,32 @@ public class AccountService(
     SignInManager<AppUser> signInManager,
     TokenService tokenService)
 {
+    public async Task<AuthResult> RefreshToken(TokenRequestDto dto)
+    {
+        var principal = tokenService.GetPrincipalFromExpiredToken(dto.Token);
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var user = await userManager.FindByIdAsync(userId!);
+        if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            return new AuthResult { Success = false, Errors = ["Invalid refresh token attempt"] };
+        }
+
+        var roles = await userManager.GetRolesAsync(user);
+        var newAccessToken = tokenService.CreateToken(user, roles);
+        var newRefreshToken = tokenService.GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        await userManager.UpdateAsync(user);
+
+        return new AuthResult
+        {
+            Success = true,
+            Token = newAccessToken,
+            RefreshToken = newRefreshToken
+        };
+    }
+
     public async Task<AuthResult> Register(RegisterDto dto)
     {
         var user = new AppUser { UserName = dto.Email, Email = dto.Email };
@@ -17,16 +43,21 @@ public class AccountService(
 
         if (result.Succeeded)
         {
-            // Gán role mặc định cho user mới
             await userManager.AddToRoleAsync(user, "User");
 
-            // Lấy danh sách Roles để đưa vào Token
             var roles = await userManager.GetRolesAsync(user);
+            var accessToken = tokenService.CreateToken(user, roles);
+            var refreshToken = tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await userManager.UpdateAsync(user);
 
             return new AuthResult
             {
                 Success = true,
-                Token = tokenService.CreateToken(user, roles)
+                Token = accessToken,
+                RefreshToken = refreshToken
             };
         }
 
@@ -47,10 +78,18 @@ public class AccountService(
         if (result.Succeeded)
         {
             var roles = await userManager.GetRolesAsync(user);
+            var accessToken = tokenService.CreateToken(user, roles);
+            var refreshToken = tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await userManager.UpdateAsync(user);
+
             return new AuthResult
             {
                 Success = true,
-                Token = tokenService.CreateToken(user, roles)
+                Token = accessToken,
+                RefreshToken = refreshToken
             };
         }
 
