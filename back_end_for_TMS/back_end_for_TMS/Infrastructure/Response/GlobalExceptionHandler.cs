@@ -11,10 +11,11 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         Exception exception,
         CancellationToken cancellationToken)
     {
-        logger.LogError(exception, ">>> JWT VALIDATION FAILED <<<");
+        logger.LogError(exception, ">>> HANDLE BUSINESS EXCEPTION <<<");
 
         var (statusCode, title) = exception switch
         {
+            BadHttpRequestException => (StatusCodes.Status400BadRequest, "Bad Request"),
             SecurityTokenException => (StatusCodes.Status401Unauthorized, "Unauthenticated"),
             UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthenticated"),
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Resource Not Found"),

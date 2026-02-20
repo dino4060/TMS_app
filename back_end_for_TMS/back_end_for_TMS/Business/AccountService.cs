@@ -1,6 +1,7 @@
 ﻿using back_end_for_TMS.Business.Types;
 using back_end_for_TMS.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
 namespace back_end_for_TMS.Business;
@@ -22,7 +23,7 @@ public class AccountService(
             throw new KeyNotFoundException("User not found by ID");
 
         if (user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            return new AuthResult { Success = false, Errors = ["Invalid refresh token"] };
+            throw new SecurityTokenException("Invalid refresh token");
 
         var roles = await userManager.GetRolesAsync(user);
         var newAccessToken = tokenService.CreateToken(user, roles);
@@ -69,11 +70,11 @@ public class AccountService(
     {
         var user = await userManager.FindByEmailAsync(dto.Email);
         if (user == null)
-            throw new KeyNotFoundException("User not found by email");
+            return new AuthResult { Success = false, Errors = ["Invalid email or password"] };
 
         var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
         if (!result.Succeeded)
-            return new AuthResult { Success = false, Errors = ["Invalid password"] };
+            return new AuthResult { Success = false, Errors = ["Invalid email or password"] };
 
         var roles = await userManager.GetRolesAsync(user);
         var accessToken = tokenService.CreateToken(user, roles);
