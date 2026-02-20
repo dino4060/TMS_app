@@ -13,21 +13,35 @@ public class TokenService(IConfiguration config)
     {
         var tokenValidationParameters = new TokenValidationParameters
         {
-            ValidateAudience = false,
-            ValidateIssuer = false,
+            ValidateIssuer = true,
+            ValidIssuer = config["JWT:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = config["JWT:Audience"],
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:SigningKey"]!)),
-            ValidateLifetime = false // This is the key: we don't care if it's expired
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(config["JWT:SigningKey"] ?? throw new InvalidOperationException("JWT:SigningKey is missing"))
+            ),
+            ValidAlgorithms = [SecurityAlgorithms.HmacSha512],
+            ValidateLifetime = false,
+            ClockSkew = TimeSpan.Zero
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
 
-        if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
-            throw new SecurityTokenException("Invalid token");
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken)
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
 
-        return principal;
+            return principal;
+        }
+        catch (Exception ex)
+        {
+            throw new SecurityTokenException("Invalid token", ex);
+        }
     }
 
     public string GenerateRefreshToken()
@@ -43,14 +57,13 @@ public class TokenService(IConfiguration config)
         // 1. Lấy thông tin từ cấu hình
         // Sử dụng GetValue để đảm bảo nếu thiếu key sẽ báo lỗi rõ ràng
         var signingKey = config.GetValue<string>("JWT:SigningKey")
-            ?? throw new ArgumentNullException("JWT:SigningKey", "Missing SigningKey in configuration");
+            ?? throw new InvalidOperationException("Missing JWT.SigningKey in configuration");
 
         // Đảm bảo key đủ độ dài cho HS512 (512 bits = 64 bytes)
         var keyBytes = Encoding.UTF8.GetBytes(signingKey);
         if (keyBytes.Length < 64)
         {
-            // Bạn có thể hạ xuống HS256 nếu key ngắn, hoặc báo lỗi để dev biết mà sửa appsettings
-            throw new InvalidOperationException("SigningKey must be at least 64 characters long for HS512.");
+            throw new InvalidOperationException("JWT.SigningKey must be at least 64 characters");
         }
 
         var key = new SymmetricSecurityKey(keyBytes);
@@ -60,7 +73,7 @@ public class TokenService(IConfiguration config)
         {
             new(JwtRegisteredClaimNames.Email, user.Email ?? ""),
             new(JwtRegisteredClaimNames.GivenName, user.UserName ?? ""),
-            new(JwtRegisteredClaimNames.NameId, user.Id) // Quan trọng để Identify User sau này
+            new(JwtRegisteredClaimNames.NameId, user.Id)
         };
 
         // Thêm các Role vào Claims
@@ -69,10 +82,7 @@ public class TokenService(IConfiguration config)
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
-        // 3. Cấu hình chữ ký (Credentials)
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-        // 4. Cấu hình nội dung Token
+        // 3. Cấu hình nội dung Token
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
@@ -82,7 +92,7 @@ public class TokenService(IConfiguration config)
             Audience = config["JWT:Audience"]
         };
 
-        // 5. Tạo và trả về chuỗi Token
+        // 4. Tạo và trả về chuỗi Token
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
 

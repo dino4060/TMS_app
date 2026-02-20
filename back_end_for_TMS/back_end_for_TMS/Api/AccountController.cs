@@ -21,7 +21,6 @@ public class AccountController(AccountService accountService) : ControllerBase
     public async Task<ActionResult<AuthResult>> RefreshToken([FromBody] TokenRequestDto dto)
     {
         var result = await accountService.RefreshToken(dto);
-        if (!result.Success) return Unauthorized(result);
         return Ok(result);
     }
 
@@ -30,7 +29,6 @@ public class AccountController(AccountService accountService) : ControllerBase
     public async Task<ActionResult<AuthResult>> Register([FromBody] RegisterDto dto)
     {
         var result = await accountService.Register(dto);
-        if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
 
@@ -39,7 +37,6 @@ public class AccountController(AccountService accountService) : ControllerBase
     public async Task<ActionResult<AuthResult>> Login([FromBody] LoginDto dto)
     {
         var result = await accountService.Login(dto);
-        if (!result.Success) return Unauthorized(result);
         return Ok(result);
     }
 
@@ -54,10 +51,7 @@ public class AccountController(AccountService accountService) : ControllerBase
     [Authorize]
     public async Task<ActionResult<UserProfile>> GetMe()
     {
-        // 'User' là property có sẵn của ControllerBase, kiểu ClaimsPrincipal
         var profile = await accountService.GetProfile(User);
-
-        if (profile == null) return NotFound();
         return Ok(profile);
     }
 }

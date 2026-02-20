@@ -2,6 +2,13 @@
 
 public static class DatabaseExtensions
 {
+    public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IConfiguration config)
+    {
+        services.AddDbContext<AppDbContext>();
+
+        return services;
+    }
+
     public static async Task CheckDatabaseConnection(this IHost host)
     {
         using var scope = host.Services.CreateScope();

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace back_end_for_TMS.Infrastructure.Security;
 
-public static class SecurityServiceExtensions
+public static class SecurityExtensions
 {
     public static IServiceCollection AddSecurityServices(this IServiceCollection services, IConfiguration config)
     {
@@ -39,6 +39,7 @@ public static class SecurityServiceExtensions
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(config["JWT:SigningKey"] ?? throw new InvalidOperationException("JWT:SigningKey is missing"))
                 ),
+                ValidAlgorithms = [SecurityAlgorithms.HmacSha512],
                 ClockSkew = TimeSpan.Zero // Standard practice: remove the default 5 min grace period for tokens
             };
         });
