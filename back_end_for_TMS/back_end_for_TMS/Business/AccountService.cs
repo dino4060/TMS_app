@@ -11,7 +11,7 @@ public class AccountService(
     SignInManager<AppUser> signInManager,
     TokenService tokenService)
 {
-    public async Task<AuthResult> RefreshToken(TokenRequestDto dto)
+    public async Task<AuthResult> RefreshToken(TokenDto dto)
     {
         var principal = tokenService.GetPrincipalFromExpiredToken(dto.Token);
         var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);

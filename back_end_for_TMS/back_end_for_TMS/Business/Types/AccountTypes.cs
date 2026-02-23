@@ -1,6 +1,6 @@
 ﻿namespace back_end_for_TMS.Business.Types;
 
-public record TokenRequestDto(string Token, string RefreshToken);
+public record TokenDto(string Token, string RefreshToken);
 
 public record RegisterDto(string Email, string Password);
 

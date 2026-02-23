@@ -18,7 +18,7 @@ public class AccountController(AccountService accountService) : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<ActionResult<AuthResult>> RefreshToken([FromBody] TokenRequestDto dto)
+    public async Task<ActionResult<AuthResult>> RefreshToken([FromBody] TokenDto dto)
     {
         var result = await accountService.RefreshToken(dto);
         return Ok(result);
