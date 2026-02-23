@@ -1,4 +1,87 @@
 :root {
+  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+#root {
+  width: 100%;
+}
+
+.card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: 2rem auto;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0 1.25rem 0;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #1d4ed8;
+} */
+
+button {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  /* Use background-color for clarity and to avoid linting conflicts */
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px; /* Slightly rounder for a modern look */
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s active;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button:hover {
+  background-color: #1d4ed8;
+}
+
+button:active {
+  transform: scale(0.98); /* Adds a "smart" tactile feel when clicked */
+}
+
+button:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+/* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -65,4 +148,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
