@@ -1,19 +1,3 @@
-// import { Outlet } from "react-router-dom";
-// import Navbar from "./Navbar";
-
-// const Layout = () => {
-//   return (
-//     <div className="layout-root">
-//       <Navbar />
-//       <main style={{ padding: "2rem" }}>
-//         <Outlet />
-//       </main>
-//     </div>
-//   );
-// };
-
-// export default Layout;
-
 import { Outlet, NavLink } from "react-router-dom";
 
 const Layout = () => {

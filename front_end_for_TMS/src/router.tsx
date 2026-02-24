@@ -3,9 +3,6 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import { lazy, Suspense } from "react";
 import PageLoader from "./components/PageLoader";
-// import Login from "./pages/Login";
-// import Register from "./pages/Register";
-// import ResetPassword from "./pages/ResetPassword";
 
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));

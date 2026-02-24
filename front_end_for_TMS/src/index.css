@@ -33,30 +33,13 @@ input {
   box-sizing: border-box;
 }
 
-/* button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button:hover {
-  background-color: #1d4ed8;
-} */
-
 button {
   width: 100%;
   padding: 0.75rem 1.5rem;
-  /* Use background-color for clarity and to avoid linting conflicts */
   background-color: #2563eb;
   color: #ffffff;
   border: none;
-  border-radius: 8px; /* Slightly rounder for a modern look */
+  border-radius: 8px;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -73,7 +56,7 @@ button:hover {
 }
 
 button:active {
-  transform: scale(0.98); /* Adds a "smart" tactile feel when clicked */
+  transform: scale(0.98);
 }
 
 button:disabled {
