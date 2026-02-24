@@ -1,14 +1,20 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ResetPassword from "./pages/ResetPassword";
+import { lazy, Suspense } from "react";
+import PageLoader from "./components/PageLoader";
+// import Login from "./pages/Login";
+// import Register from "./pages/Register";
+// import ResetPassword from "./pages/ResetPassword";
+
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, // Optional: Wrap in a layout for consistent Nav/Footer
+    element: <Layout />,
     children: [
       {
         index: true,
@@ -16,15 +22,27 @@ export const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Login />
+          </Suspense>
+        ),
       },
       {
         path: "register",
-        element: <Register />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Register />
+          </Suspense>
+        ),
       },
       {
         path: "reset-password",
-        element: <ResetPassword />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ResetPassword />
+          </Suspense>
+        ),
       },
     ],
   },
