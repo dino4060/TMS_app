@@ -71,6 +71,13 @@ export class Navbar {
       ]
     },
     {
+      label: 'Example',
+      icon: 'person',
+      items: [
+        { label: 'Cancellation', route: '/example/cancellation' }
+      ]
+    },
+    {
       label: 'Account',
       icon: 'account_circle',
       items: [

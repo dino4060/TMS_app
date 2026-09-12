@@ -57,6 +57,10 @@ export const appRoutes: Routes = [
         loadComponent: () => import('./common/development/development.page').then(m => m.DevelopmentPage)
       },
       {
+        path: 'example/cancellation',
+        loadComponent: () => import('./common/example/cancellation/cancellation.component').then(m => m.CancellationComponent)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./features/account/pages/profile/profile.page').then(m => m.ProfilePage)
       },
